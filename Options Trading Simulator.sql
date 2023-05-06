@@ -1,5 +1,6 @@
 -- Create the Tables
 
+
 CREATE TABLE underlying_assets (
   id INT PRIMARY KEY,
   current_price DECIMAL(10, 2) NOT NULL,
@@ -28,7 +29,6 @@ CREATE TABLE trades (
   FOREIGN KEY (options_contract_id) REFERENCES options_contracts(id)
 );
 
-
 CREATE TABLE trading_strategies (
   id INT PRIMARY KEY,
   strategy_name VARCHAR(20) NOT NULL
@@ -43,6 +43,7 @@ CREATE TABLE strategy_trades (
   FOREIGN KEY (strategy_id) REFERENCES trading_strategies(id),
   FOREIGN KEY (options_contract_id, trade_type, trade_date) REFERENCES trades(options_contract_id, trade_type, trade_date)
 );
+
 
 -- Insert Data into Tables
 
@@ -95,7 +96,6 @@ INSERT INTO strategy_trades (strategy_id, options_contract_id, trade_type, trade
 (4, 8, 'SELL', '2022-05-04'),
 (5, 9, 'BUY', '2022-05-05'),
 (5, 10, 'SELL', '2022-05-05');
-
 
 
 -- Query the Data
