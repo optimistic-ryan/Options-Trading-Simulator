@@ -1,0 +1,22 @@
+# Ignore SQL Server files
+*.mdf
+*.ldf
+*.ndf
+*.bak
+
+# Ignore generated files
+*.sqluser
+*.sqlproj.user
+*.dbmdl
+*.dbmeta
+
+# Ignore log and temp files
+*.log
+*.tmp
+
+# Ignore database object scripts
+**/obj/*
+**/bin/*
+**/publish/*
+**/packages/*
+**/Properties/*
