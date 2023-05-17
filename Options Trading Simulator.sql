@@ -14,7 +14,7 @@ CREATE TABLE options_contracts (
   option_type CHAR(4) NOT NULL,
   strike_price DECIMAL(10, 2) NOT NULL,
   expiration_date DATE NOT NULL,
-  risk_free_rate DECIMAL(5, 2) NOT NULL,
+  risk_free_rate DECIMAL(5, 4) NOT NULL,
   volatility DECIMAL(5, 2) NOT NULL,
   dividend_yield DECIMAL(5, 2) NOT NULL,
   FOREIGN KEY (underlying_asset_id) REFERENCES underlying_assets(id)
@@ -55,16 +55,16 @@ INSERT INTO underlying_assets (id, current_price, ticker_symbol, company_name) V
 (5, 200.00, 'TSLA', 'Tesla Inc.');
 
 INSERT INTO options_contracts (id, underlying_asset_id, option_type, strike_price, expiration_date, risk_free_rate, volatility, dividend_yield) VALUES
-(1, 1, 'CALL', 150.00, '2022-05-19', 0.02, 0.50, 0.20),
-(2, 1, 'PUT', 150.00, '2022-05-19', 0.02, 0.50, 0.20),
-(3, 2, 'CALL', 1200.00, '2022-05-19', 0.02, 0.50, 0.20),
-(4, 2, 'PUT', 1200.00, '2022-05-19', 0.02, 0.50, 0.20),
-(5, 3, 'CALL', 200.00, '2022-05-19', 0.02, 0.50, 0.20),
-(6, 3, 'PUT', 200.00, '2022-05-19', 0.02, 0.50, 0.20),
-(7, 4, 'CALL', 3300.00, '2022-05-19', 0.02, 0.50, 0.20),
-(8, 4, 'PUT', 3300.00, '2022-05-19', 0.02, 0.50, 0.20),
-(9, 5, 'CALL', 600.00, '2022-05-19', 0.02, 0.50, 0.20),
-(10, 5, 'PUT', 600.00, '2022-05-19', 0.02, 0.50, 0.20);
+(1, 1, 'CALL', 150.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(2, 1, 'PUT', 150.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(3, 2, 'CALL', 1200.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(4, 2, 'PUT', 1200.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(5, 3, 'CALL', 200.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(6, 3, 'PUT', 200.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(7, 4, 'CALL', 3300.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(8, 4, 'PUT', 3300.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(9, 5, 'CALL', 600.00, '2022-05-19', 0.0287, 0.50, 0.20),
+(10, 5, 'PUT', 600.00, '2022-05-19', 0.0287, 0.50, 0.20);
 
 INSERT INTO trades (options_contract_id, trade_type, quantity, trade_date, trade_price) VALUES
 (1, 'BUY', 10, '2022-05-01', 5.00),
