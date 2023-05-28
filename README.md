@@ -22,8 +22,8 @@ The code includes several functions for querying and analyzing data:
 * `get_trades_by_strategy`: retrieves all trades for a specific trading strategy.
 * `calculate_net_cost`: calculates the net cost of a trading strategy.
 * `calculate_strategy_profit_loss`: calculates the total profit or loss for a trading strategy.
-* `cdf_normal`: calculates the cumulative distribution function of a standard normal distribution at x.
-* `black_scholes_probability`: calculates the probability that an option will be in-the-money at expiration, assuming a lognormal distribution of the underlying asset price.
+* `cdf_normal`: calculates the cumulative distribution function of a standard normal distribution.
+* `black_scholes_probability`: calculates the probability that a European option will be in-the-money at expiration, assuming a lognormal distribution of the underlying asset price.
 
 ## Usage
 After running the SQL code, the functions can query and analyze the data stored in the tables. For example, to retrieve all trades for the "Bullish Call Spread" trading strategy, you can run the following SQL command:
