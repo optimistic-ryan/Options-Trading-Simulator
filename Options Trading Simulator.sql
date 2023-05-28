@@ -182,7 +182,10 @@ AS $$
 DECLARE
   t numeric;
 BEGIN
+  -- It's part of the coefficient in the polynomial approximation.
   t := 1.0 / (1.0 + 0.2316419 * abs(x));
+  -- This formula is based on the approximation of CDF using a polynomial which is a part of Abramowitz and Stegun formula.
+  -- The formula approximates the CDF with satisfactory accuracy for practical purposes.
   RETURN 1.0 - 1.0 / sqrt(2.0 * pi()) * exp(-power(x, 2) / 2.0) * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + 1.330274429 * t))));
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
