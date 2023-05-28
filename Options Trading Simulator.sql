@@ -187,7 +187,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
--- Calculate the probability that an option will be in-the-money at expiration assuming a lognormal distribution of the underlying asset price
+-- Calculate the probability that a European option will be in-the-money at expiration assuming a lognormal distribution of the underlying asset price
 CREATE FUNCTION black_scholes_probability(p_option_type CHAR(4), p_current_price DECIMAL, p_strike_price DECIMAL, p_risk_free_rate DECIMAL, p_time_to_maturity DECIMAL, p_volatility DECIMAL, p_dividend_yield DECIMAL)
 RETURNS DECIMAL AS $$
 DECLARE
