@@ -176,16 +176,17 @@ SELECT * FROM calculate_strategy_profit_loss(1);
 
 -- Black-Scholes Model
 
+-- Cumulative Distribution Function
 CREATE FUNCTION cdf_normal(x numeric)
 RETURNS numeric
 AS $$
 DECLARE
   t numeric;
 BEGIN
-  -- It's part of the coefficient in the polynomial approximation.
+  -- Part of the coefficient in the polynomial approximation
   t := 1.0 / (1.0 + 0.2316419 * abs(x));
-  -- This formula is based on the approximation of CDF using a polynomial which is a part of Abramowitz and Stegun formula.
-  -- The formula approximates the CDF with satisfactory accuracy for practical purposes.
+  -- This formula is based on the approximation of CDF using a polynomial which is a part of Abramowitz and Stegun formula
+  -- The formula approximates the CDF with satisfactory accuracy for practical purposes
   RETURN 1.0 - 1.0 / sqrt(2.0 * pi()) * exp(-power(x, 2) / 2.0) * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + 1.330274429 * t))));
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -201,22 +202,22 @@ BEGIN
   d1 := (ln(p_current_price / p_strike_price) + (p_risk_free_rate - p_dividend_yield + power(p_volatility, 2) / 2) * p_time_to_maturity) / (p_volatility * sqrt(p_time_to_maturity));
   d2 := d1 - p_volatility * sqrt(p_time_to_maturity);
 
-  -- Calculate the in-the-money ratio based on the option type.
+  -- Calculate the in-the-money ratio based on the option type
   SELECT
     (CASE p_option_type
       WHEN 'CALL' THEN
         -- For a call option, use the cumulative distribution function over ascending current prices
-        -- Plus the Black-Scholes call option pricing formula.
+        -- Plus the Black-Scholes call option pricing formula
         CUME_DIST() OVER (ORDER BY current_price) + (1 - cdf_normal(d1) * exp(-p_dividend_yield * p_time_to_maturity)) * exp(-p_risk_free_rate * p_time_to_maturity)
       WHEN 'PUT' THEN
         -- For a put option, use the cumulative distribution function over descending current prices
-        -- Plus the Black-Scholes put option pricing formula.
+        -- Plus the Black-Scholes put option pricing formula
         CUME_DIST() OVER (ORDER BY current_price DESC) + (1 - cdf_normal(-d1) * exp(-p_dividend_yield * p_time_to_maturity)) * exp(-p_risk_free_rate * p_time_to_maturity)
     END) INTO in_the_money_ratio
   FROM underlying_assets
   WHERE current_price <> p_strike_price;
 
-  -- Return the theoretical price of the option by adjusting the in-the-money ratio based on the type of option.
+  -- Return the theoretical price of the option by adjusting the in-the-money ratio based on the type of option
   RETURN (CASE p_option_type
     WHEN 'CALL' THEN
       (1 - in_the_money_ratio) * p_current_price / (p_strike_price * exp(-p_risk_free_rate * p_time_to_maturity))
