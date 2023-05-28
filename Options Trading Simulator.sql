@@ -194,23 +194,29 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 CREATE FUNCTION black_scholes_probability(p_option_type CHAR(4), p_current_price DECIMAL, p_strike_price DECIMAL, p_risk_free_rate DECIMAL, p_time_to_maturity DECIMAL, p_volatility DECIMAL, p_dividend_yield DECIMAL)
 RETURNS DECIMAL AS $$
 DECLARE
-  d1 DECIMAL;
+  d1 DECIMAL; 
   d2 DECIMAL;
-  in_the_money_ratio DECIMAL;
+  in_the_money_ratio DECIMAL; 
 BEGIN
   d1 := (ln(p_current_price / p_strike_price) + (p_risk_free_rate - p_dividend_yield + power(p_volatility, 2) / 2) * p_time_to_maturity) / (p_volatility * sqrt(p_time_to_maturity));
   d2 := d1 - p_volatility * sqrt(p_time_to_maturity);
 
+  -- Calculate the in-the-money ratio based on the option type.
   SELECT
     (CASE p_option_type
       WHEN 'CALL' THEN
+        -- For a call option, use the cumulative distribution function over ascending current prices
+        -- Plus the Black-Scholes call option pricing formula.
         CUME_DIST() OVER (ORDER BY current_price) + (1 - cdf_normal(d1) * exp(-p_dividend_yield * p_time_to_maturity)) * exp(-p_risk_free_rate * p_time_to_maturity)
       WHEN 'PUT' THEN
+        -- For a put option, use the cumulative distribution function over descending current prices
+        -- Plus the Black-Scholes put option pricing formula.
         CUME_DIST() OVER (ORDER BY current_price DESC) + (1 - cdf_normal(-d1) * exp(-p_dividend_yield * p_time_to_maturity)) * exp(-p_risk_free_rate * p_time_to_maturity)
     END) INTO in_the_money_ratio
   FROM underlying_assets
   WHERE current_price <> p_strike_price;
 
+  -- Return the theoretical price of the option by adjusting the in-the-money ratio based on the type of option.
   RETURN (CASE p_option_type
     WHEN 'CALL' THEN
       (1 - in_the_money_ratio) * p_current_price / (p_strike_price * exp(-p_risk_free_rate * p_time_to_maturity))
@@ -218,4 +224,4 @@ BEGIN
       in_the_money_ratio * p_current_price / (p_strike_price * exp(-p_risk_free_rate * p_time_to_maturity))
   END);
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql; 
