@@ -1,4 +1,4 @@
-# Options-Trading-Simulator
+# Options Trading Simulator
 
 This SQL code creates several tables for storing data related to options trading and implements various functions for analyzing trading strategies.
 
