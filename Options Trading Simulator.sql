@@ -155,17 +155,31 @@ $$ LANGUAGE plpgsql;
 CREATE FUNCTION calculate_strategy_profit_loss(p_strategy_id INTEGER)
 RETURNS TABLE (strategy_id INTEGER, profit_loss DECIMAL) AS $$
 BEGIN
+  
   RETURN QUERY
-  SELECT st.strategy_id,
-         SUM(t.trade_price * t.quantity * (CASE t.trade_type WHEN 'BUY' THEN -1 ELSE 1 END) *
-             (CASE oc.option_type WHEN 'CALL' THEN (GREATEST(0, ua.current_price - oc.strike_price)) ELSE (GREATEST(0, oc.strike_price - ua.current_price)) END)
-             ) as profit_loss
-  FROM trades t
-  JOIN strategy_trades st ON t.options_contract_id = st.options_contract_id AND t.trade_type = st.trade_type
-  JOIN options_contracts oc ON t.options_contract_id = oc.id
-  JOIN underlying_assets ua ON oc.underlying_asset_id = ua.id
-  WHERE st.strategy_id = p_strategy_id
-  GROUP BY st.strategy_id;
+  SELECT 
+    st.strategy_id,
+    -- The profit_loss is calculated as the sum of the following calculation for each trade:
+    -- trade_price * quantity * trade_direction * options_profit_loss
+    SUM(
+      t.trade_price * 
+      t.quantity * 
+      (CASE t.trade_type WHEN 'BUY' THEN -1 ELSE 1 END) *  
+      (CASE oc.option_type WHEN 'CALL' THEN (GREATEST(0, ua.current_price - oc.strike_price)) ELSE (GREATEST(0, oc.strike_price - ua.current_price)) END)
+      -- If the option_type is 'CALL', this is the max of 0 and (current_price - strike_price). Otherwise, it's the max of 0 and (strike_price - current_price)
+    ) as profit_loss
+  FROM 
+    trades t 
+  JOIN 
+    strategy_trades st ON t.options_contract_id = st.options_contract_id AND t.trade_type = st.trade_type
+  JOIN 
+    options_contracts oc ON t.options_contract_id = oc.id
+  JOIN 
+    underlying_assets ua ON oc.underlying_asset_id = ua.id
+  WHERE 
+    st.strategy_id = p_strategy_id  
+  GROUP BY 
+    st.strategy_id;  
 END;
 $$ LANGUAGE plpgsql;
 
